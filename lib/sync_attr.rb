@@ -22,12 +22,14 @@
 require 'sync'
 require 'sync_attr/version'
 require 'sync_attr/class_attributes'
-#require 'sync_attr/instance_attributes'
+require 'sync_attr/instance_attributes'
 
 module SyncAttr
   # Add class methods and initialize mixin
   def self.included(base)
     base.extend(SyncAttr::ClassAttributes::ClassMethods)
-    base.send(:sync_attr_class_attr_init)
+    base.extend(SyncAttr::InstanceAttributes::ClassMethods)
+    base.send(:sync_cattr_init)
+    base.send(:sync_attr_init)
   end
 end

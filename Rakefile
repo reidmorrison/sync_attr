@@ -18,7 +18,7 @@ task :gem  do |t|
     s.date        = Date.today.to_s
     s.summary     = "Thread safe accessors for Ruby class and instance attributes. Supports thread safe lazy loading of attributes"
     s.description = "SyncAttr is a mixin to read, write and lazy initialize both class and instance variables in a multi-threaded environment when the attribute could be modified by two threads at the same time, written in Ruby."
-    s.files       = FileList["./**/*"].exclude('*.gem', 'nbproject').map{|f| f.sub(/^\.\//, '')}
+    s.files       = FileList['**/*'].exclude('*.gem', /nbproject/)
     s.has_rdoc    = true
   end
   Gem::Builder.new(gemspec).build

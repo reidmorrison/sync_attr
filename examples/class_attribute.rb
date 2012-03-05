@@ -3,7 +3,7 @@
 require 'sync_attr'
 
 # Sample class with lazy initialized Synchronized Class Attributes
-def Person
+class Person
   include SyncAttr
 
   # Thread safe Class Attribute reader for name
@@ -20,12 +20,11 @@ def Person
   end
 end
 
-person = Person.new
-puts "The person is #{person.name} with age #{person.age}"
+puts "The person is #{Person.name} with age #{Person.age}"
 
-person.age = 22
-puts "The person is #{person.name} now has age #{person.age}"
+Person.age = 22
+puts "The person is #{Person.name} now has age #{Person.age}"
 
-person.age = Proc.new {|age| age += 1 }
-puts "The person is #{person.name} now has age #{person.age}"
+Person.age = Proc.new {|age| age += 1 }
+puts "The person is #{Person.name} now has age #{Person.age}"
 

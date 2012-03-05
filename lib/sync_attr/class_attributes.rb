@@ -25,19 +25,26 @@ module SyncAttr
       #   end
       def sync_cattr_reader(*attributes, &block)
         attributes.each do |attribute|
-          self.class.send(:define_method, attribute.to_sym) do
-            var_name = "@@#{attribute}".to_sym
-            if class_variable_defined?(var_name)
-              sync_attr_sync.synchronize(:SH) { class_variable_get(var_name) }
-            else
-              return nil unless block
-              sync_attr_sync.synchronize(:EX) do
-                # Now that we have exclusive access make sure that another thread has
-                # not just initialized this attribute
-                if class_variable_defined?(var_name)
-                  class_variable_get(var_name)
+          metaclass.instance_eval do
+            define_method(attribute.to_sym) do
+              var_name = "@@#{attribute}".to_sym
+              if class_variable_defined?(var_name)
+                # If there is no writer then it is not necessary to protect reads
+                if self.respond_to?("#{attribute}=".to_sym, true)
+                  sync_cattr_sync.synchronize(:SH) { class_variable_get(var_name) }
                 else
-                  class_variable_set(var_name, class_eval(&block))
+                  class_variable_get(var_name)
+                end
+              else
+                return nil unless block
+                sync_cattr_sync.synchronize(:EX) do
+                  # Now that we have exclusive access make sure that another thread has
+                  # not just initialized this attribute
+                  if class_variable_defined?(var_name)
+                    class_variable_get(var_name)
+                  else
+                    class_variable_set(var_name, class_eval(&block))
+                  end
                 end
               end
             end
@@ -52,7 +59,7 @@ module SyncAttr
         attributes.each do |attribute|
           class_eval(<<-EOS, __FILE__, __LINE__ + 1)
         def self.#{attribute}=(value)
-          sync_attr_sync.synchronize(:EX) do
+          sync_cattr_sync.synchronize(:EX) do
             if value.is_a?(Proc)
               current_value = @@#{attribute} if defined?(@@#{attribute})
               @@#{attribute} = value.call(current_value)
@@ -67,19 +74,30 @@ module SyncAttr
 
       # Generate a class reader and writer for the attribute
       def sync_cattr_accessor(*attributes, &block)
-        sync_cattr_reader(*attributes, &block)
         sync_cattr_writer(*attributes)
+        sync_cattr_reader(*attributes, &block)
       end
 
-      private
+      # Returns the metaclass or eigenclass so that we
+      # can dynamically generate class methods
+      # With thanks, see: https://gist.github.com/1199817
+      def metaclass
+        class << self;
+          self
+        end
+      end
+
+      # Returns the sync used by the included class to synchronize access to the
+      # class attributes
+      def sync_cattr_sync
+        @sync_cattr_sync
+      end
+
+      protected
 
       # Give each class that this module is mixed into it's own Sync
-      def sync_attr_class_attr_init
-        @sync_attr_sync = ::Sync.new
-      end
-
-      def sync_attr_sync
-        @sync_attr_sync
+      def sync_cattr_init
+        @sync_cattr_sync = ::Sync.new
       end
 
     end
