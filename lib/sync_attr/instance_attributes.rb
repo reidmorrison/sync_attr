@@ -1,4 +1,3 @@
-      puts "Loaded sync_attr_reader"
 # Synchronize access and lazy initialize one or more attributes
 #
 # Author: Reid Morrison <reidmo@gmail.com>
