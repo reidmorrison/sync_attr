@@ -12,7 +12,7 @@ that inconsistent data is not created.
 For example, without sync_attr if two threads attempt to write to the
 same attribute at the same time it is not deterministic what the results will be.
 This condition is made worse when two threads attempt to initialize class variables
-at the same time that could take a second or longer to complete. 
+at the same time that could take a second or longer to complete.
 
 ### Features
 
@@ -32,24 +32,53 @@ at the same time that could take a second or longer to complete.
   the Rails environment
 * Not dependent on Rails
 
-### Examples
+### Synchronized Class Attribute example
 
     require 'sync_attr'
 
     # Sample class with lazy initialized Synchronized Class Attributes
-    def Person
+    class Person
       include SyncAttr
 
       # Thread safe Class Attribute reader for name
-      # Sets :name only when it is first called
+      # with a default value
       # Ideal for when name is loaded after startup from a database or config file
       sync_cattr_reader :name do
         "Joe Bloggs"
       end
 
       # Thread safe Class Attribute reader and writer for age
-      # Sets :age only when it is first called
+      # with a default value
       sync_cattr_accessor :age do
+        21
+      end
+    end
+
+    puts "The person is #{Person.name} with age #{Person.age}"
+
+    Person.age = 22
+    puts "The person is #{Person.name} now has age #{Person.age}"
+
+    Person.age = Proc.new {|age| age += 1 }
+    puts "The person is #{Person.name} now has age #{Person.age}"
+
+### Synchronized Instance Attribute example
+
+    require 'sync_attr'
+
+    # Sample class with lazy initialized Synchronized Class Attributes
+    class Person
+      include SyncAttr
+
+      # Thread safe Attribute reader for name
+      # with a default value
+      sync_attr_reader :name do
+        "Joe Bloggs"
+      end
+
+      # Thread safe Attribute reader and writer for age
+      # with a default value
+      sync_attr_accessor :age do
         21
       end
     end
