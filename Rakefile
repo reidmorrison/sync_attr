@@ -1,6 +1,8 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
+require 'rubygems'
+require 'rubygems/package'
 require 'rake/clean'
 require 'rake/testtask'
 require 'date'
@@ -18,10 +20,11 @@ task :gem  do |t|
     s.date        = Date.today.to_s
     s.summary     = "Thread safe accessors for Ruby class and instance attributes. Supports thread safe lazy loading of attributes"
     s.description = "SyncAttr is a mixin to read, write and lazy initialize both class and instance variables in a multi-threaded environment when the attribute could be modified by two threads at the same time, written in Ruby."
-    s.files       = FileList['**/*'].exclude('*.gem', /nbproject/)
+    s.files       = FileList["./**/*"].exclude(/\.gem$/, /\.log$/,/nbproject/).map{|f| f.sub(/^\.\//, '')}
+    s.license     = "Apache License V2.0"
     s.has_rdoc    = true
   end
-  Gem::Builder.new(gemspec).build
+  Gem::Package.build gemspec
 end
 
 desc "Run Test Suite"

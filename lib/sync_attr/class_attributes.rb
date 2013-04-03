@@ -90,7 +90,7 @@ module SyncAttr
       # Returns the sync used by the included class to synchronize access to the
       # class attributes
       def sync_cattr_sync
-        @sync_cattr_sync
+        @sync_cattr_sync ||= ::Sync.new
       end
 
       protected

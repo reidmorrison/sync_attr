@@ -1,3 +1,3 @@
-module SyncAttr #:nodoc
-  VERSION = "0.1.1"
+module SyncAttr
+  VERSION = "1.0.0"
 end
