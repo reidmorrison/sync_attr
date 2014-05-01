@@ -3,7 +3,7 @@ sync_attr
 
 Thread-safe Ruby class variables with lazy loaded default values and initializers
 
-* http://github.com/ClarityServices/sync_attr
+* http://github.com/reidmorrison/sync_attr
 
 ### Introduction
 
@@ -101,8 +101,8 @@ at the same time that could take a second or longer to complete.
 Meta
 ----
 
-* Code: `git clone git://github.com/ClarityServices/sync_attr.git`
-* Home: <https://github.com/ClarityServices/sync_attr>
+* Code: `git clone git://github.com/reidmorrison/sync_attr.git`
+* Home: <https://github.com/reidmorrison/sync_attr>
 * Bugs: <http://github.com/reidmorrison/sync_attr/issues>
 * Gems: <http://rubygems.org/gems/sync_attr>
 
@@ -116,7 +116,7 @@ Reid Morrison :: reidmo@gmail.com :: @reidmorrison
 License
 -------
 
-Copyright 2012 Clarity Services, Inc.
+Copyright 2012, 2013, 2014 Reid Morrison
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

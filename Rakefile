@@ -16,7 +16,7 @@ task :gem  do |t|
     s.platform    = Gem::Platform::RUBY
     s.authors     = ['Reid Morrison']
     s.email       = ['reidmo@gmail.com']
-    s.homepage    = 'https://github.com/ClarityServices/sync_attr'
+    s.homepage    = 'https://github.com/reidmorrison/sync_attr'
     s.date        = Date.today.to_s
     s.summary     = "Thread safe accessors for Ruby class and instance attributes. Supports thread safe lazy loading of attributes"
     s.description = "SyncAttr is a mixin to read, write and lazy initialize both class and instance variables in a multi-threaded environment when the attribute could be modified by two threads at the same time, written in Ruby."
