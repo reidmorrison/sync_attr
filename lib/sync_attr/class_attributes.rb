@@ -1,4 +1,4 @@
-class Class
+class Module
   # Lazy load the specific class attribute by calling the supplied block when
   # the attribute is first read and then return the same value for all subsequent
   # calls to the class variable
