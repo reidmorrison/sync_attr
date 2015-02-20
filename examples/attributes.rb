@@ -4,7 +4,7 @@ require 'sync_attr'
 
 # Sample class with lazy initialized Synchronized Class Attributes
 class Person
-  include SyncAttr
+  include SyncAttr::Attributes
 
   # Thread safe Instance Attribute reader for name
   # Sets :name only when it is first called

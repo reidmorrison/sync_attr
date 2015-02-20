@@ -1,14 +1,6 @@
-# Allow examples to be run in-place without requiring a gem install
-$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-
-require 'rubygems'
-require 'test/unit'
-require 'shoulda'
-require 'sync_attr'
+require_relative 'test_helper'
 
 class SyncCAttrExample
-  include SyncAttr
-
   sync_cattr_reader :test1 do
     'hello world'
   end
@@ -22,14 +14,12 @@ class SyncCAttrExample
 end
 
 class SyncCAttrExample2
-  include SyncAttr
-
   sync_cattr_reader :test1 do
     'another world'
   end
 end
 
-class ClassAttributesTest < Test::Unit::TestCase
+class ClassAttributesTest < Minitest::Test
   context "with example" do
 
     should 'lazy initialize class attribute' do
@@ -67,9 +57,7 @@ class ClassAttributesTest < Test::Unit::TestCase
   context "with example2" do
 
     should 'ensure that different classes have their own synch instances' do
-      assert ex1 = SyncCAttrExample.new
-      assert ex2 = SyncCAttrExample2.new
-      assert ex1.class.send(:sync_cattr_sync).object_id != ex2.class.send(:sync_cattr_sync).object_id
+      assert SyncCAttrExample.instance_variable_get(:@sync_attr_sync).object_id != SyncCAttrExample2.instance_variable_get(:@sync_attr_sync).object_id
     end
 
     should 'ensure that different classes have their own class attributes' do

@@ -1,13 +1,7 @@
-# Allow examples to be run in-place without requiring a gem install
-$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-
-require 'rubygems'
-require 'test/unit'
-require 'shoulda'
-require 'sync_attr'
+require_relative 'test_helper'
 
 class SyncAttrExample
-  include SyncAttr
+  include SyncAttr::Attributes
 
   sync_attr_reader :test1 do
     'hello world'
@@ -23,7 +17,7 @@ end
 
 # Ensure that class and instance attributes are distinct
 class SyncAttrExample2
-  include SyncAttr
+  include SyncAttr::Attributes
 
   sync_attr_reader :test1 do
     'hello world instance'
@@ -33,7 +27,7 @@ class SyncAttrExample2
   end
 end
 
-class InstanceAttributesTest < Test::Unit::TestCase
+class InstanceAttributesTest < Minitest::Test
   context "with example" do
 
     should 'lazy initialize attribute' do
@@ -79,10 +73,15 @@ class InstanceAttributesTest < Test::Unit::TestCase
       assert_equal 'hello world class', s.class.test1
     end
 
-    should 'ensure that different classes have their own synch instances' do
+    should 'ensure that different objects have their own synchs' do
       assert ex1 = SyncAttrExample.new
       assert ex2 = SyncAttrExample2.new
-      assert ex1.class.send(:sync_cattr_sync).object_id != ex2.class.send(:sync_cattr_sync).object_id
+      assert ex1.instance_variable_get(:@sync_attr_sync).object_id != ex2.instance_variable_get(:@sync_attr_sync).object_id
+    end
+
+    should 'ensure that objects and classes have their own synchs' do
+      assert ex1 = SyncAttrExample.new
+      assert SyncAttrExample.instance_variable_get(:@sync_attr_sync).object_id != ex1.instance_variable_get(:@sync_attr_sync).object_id
     end
   end
 end

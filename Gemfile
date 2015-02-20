@@ -1,6 +1,10 @@
 source 'http://rubygems.org'
 
-group :test do
-  gem "shoulda"
-end
+gemspec
 
+gem 'rake'
+gem 'minitest'
+gem 'minitest-reporters'
+gem 'minitest-stub_any_instance'
+gem 'shoulda-context'
+gem 'awesome_print'
