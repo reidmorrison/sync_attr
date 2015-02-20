@@ -73,15 +73,29 @@ class InstanceAttributesTest < Minitest::Test
       assert_equal 'hello world class', s.class.test1
     end
 
-    should 'ensure that different objects have their own synchs' do
+    should 'ensure that different class instances have their own synchs' do
       assert ex1 = SyncAttrExample.new
       assert ex2 = SyncAttrExample2.new
-      assert ex1.instance_variable_get(:@sync_attr_sync).object_id != ex2.instance_variable_get(:@sync_attr_sync).object_id
+      assert_equal 'hello world', ex1.test1
+      assert_equal 'hello world instance', ex2.test1
+      assert ex1.instance_variable_get(:@_sync_attr_sync)
+      assert ex1.instance_variable_get(:@_sync_attr_sync).object_id != ex2.instance_variable_get(:@_sync_attr_sync).object_id
+    end
+
+    should 'ensure that different instances have their own synchs' do
+      assert ex1 = SyncAttrExample.new
+      assert ex2 = SyncAttrExample.new
+      assert_equal 'hello world', ex1.test1
+      assert_equal 'hello world', ex2.test1
+      assert ex1.instance_variable_get(:@_sync_attr_sync)
+      assert ex1.instance_variable_get(:@_sync_attr_sync).object_id != ex2.instance_variable_get(:@_sync_attr_sync).object_id
     end
 
     should 'ensure that objects and classes have their own synchs' do
       assert ex1 = SyncAttrExample.new
-      assert SyncAttrExample.instance_variable_get(:@sync_attr_sync).object_id != ex1.instance_variable_get(:@sync_attr_sync).object_id
+      assert_equal 'hello world', ex1.test1
+      assert ex1.instance_variable_get(:@_sync_attr_sync)
+      assert SyncAttrExample.instance_variable_get(:@__sync_attr_sync).object_id != ex1.instance_variable_get(:@_sync_attr_sync).object_id, SyncAttrExample.instance_variable_get(:@__sync_attr_sync)
     end
   end
 end

@@ -26,19 +26,20 @@ module SyncAttr
       #     end
       #   end
       def sync_attr_reader(*attributes, &block)
+        self.class.send(:sync_attr_sync)
         attributes.each do |attribute|
           self.send(:define_method, attribute.to_sym) do
             var_name = "@#{attribute}".to_sym
             if instance_variable_defined?(var_name)
               # If there is no writer then it is not necessary to protect reads
               if respond_to?("#{attribute}=".to_sym, true)
-                @sync_attr_sync.synchronize(:SH) { instance_variable_get(var_name) }
+                sync_attr_sync(:SH) { instance_variable_get(var_name) }
               else
                 instance_variable_get(var_name)
               end
             else
               return nil unless block
-              @sync_attr_sync.synchronize(:EX) do
+              sync_attr_sync(:EX) do
                 # Now that we have exclusive access make sure that another thread has
                 # not just initialized this attribute
                 if instance_variable_defined?(var_name)
@@ -56,18 +57,19 @@ module SyncAttr
       # Supply a Proc ensure an attribute is not being updated by another thread:
       #   my_object.count = Proc.new {|count| (count||0) + 1}
       def sync_attr_writer(*attributes)
+        self.class.send(:sync_attr_sync)
         attributes.each do |attribute|
           class_eval(<<-EOS, __FILE__, __LINE__ + 1)
-        def #{attribute}=(value)
-          @sync_attr_sync.synchronize(:EX) do
-            if value.is_a?(Proc)
-              current_value = @#{attribute} if defined?(@#{attribute})
-              @#{attribute} = value.call(current_value)
-            else
-              @#{attribute} = value
+            def #{attribute}=(value)
+              sync_attr_sync(:EX) do
+                if value.is_a?(Proc)
+                  current_value = @#{attribute} if defined?(@#{attribute})
+                  @#{attribute} = value.call(current_value)
+                else
+                  @#{attribute} = value
+                end
+              end
             end
-          end
-        end
           EOS
         end
       end
@@ -79,25 +81,20 @@ module SyncAttr
       end
     end
 
-    def self.extend_object(obj)
-      super(obj)
-      obj.__send__(:init_sync_attr)
-    end
-
     def self.included(base)
       base.extend(SyncAttr::Attributes::ClassMethods)
     end
 
     private
 
-    # Use <tt>include SyncAttr::InstanceAttributes</tt> instead of this constructor
-    def initialize(*args)
-      super
-      init_sync_attr
-    end
-
-    def init_sync_attr
-      @sync_attr_sync = ::Sync.new
+    # Thread safe way of creating the instance sync
+    def sync_attr_sync(share, &block)
+      unless defined?(@_sync_attr_sync)
+        self.class.send(:sync_attr_sync, :EX) do
+          @_sync_attr_sync = ::Sync.new unless defined?(@_sync_attr_sync)
+        end
+      end
+      @_sync_attr_sync.synchronize(share, &block)
     end
 
   end

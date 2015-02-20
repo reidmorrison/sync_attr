@@ -17,8 +17,8 @@ class Module
   #       'hello world'
   #     end
   #   end
-  def sync_cattr_reader(*attributes, &block)
-    defined?(@sync_attr_sync) ? @sync_attr_sync : (@sync_attr_sync = ::Sync.new)
+  def sync_mattr_reader(*attributes, &block)
+    sync_attr_sync
     attributes.each do |attribute|
       raise NameError.new("invalid attribute name: #{attribute}") unless attribute =~ /^[_A-Za-z]\w*$/
       # Class reader with lazy initialization for the first thread that calls this method
@@ -29,13 +29,13 @@ class Module
           if class_variable_defined?(var_name)
             # If there is no writer then it is not necessary to protect reads
             if self.respond_to?("#{attribute}=".to_sym, true)
-              @sync_attr_sync.synchronize(:SH) { class_variable_get(var_name) }
+              sync_attr_sync(:SH) { class_variable_get(var_name) }
             else
               class_variable_get(var_name)
             end
           else
             return nil unless block
-            @sync_attr_sync.synchronize(:EX) do
+            sync_attr_sync(:EX) do
               # Now that we have exclusive access make sure that another thread has
               # not just initialized this attribute
               if class_variable_defined?(var_name)
@@ -49,16 +49,17 @@ class Module
       end
     end
   end
+  alias :sync_cattr_reader :sync_mattr_reader
 
   # Generates a writer to set a synchronized attribute
   # Supply a Proc ensure an attribute is not being updated by another thread:
   #   MyClass.count = Proc.new {|count| (count||0) + 1}
-  def sync_cattr_writer(*attributes)
-    defined?(@sync_attr_sync) ? @sync_attr_sync : (@sync_attr_sync = ::Sync.new)
+  def sync_mattr_writer(*attributes)
+    sync_attr_sync
     attributes.each do |attribute|
       class_eval(<<-EOS, __FILE__, __LINE__ + 1)
         def self.#{attribute}=(value)
-          @sync_attr_sync.synchronize(:EX) do
+          sync_attr_sync(:EX) do
             if value.is_a?(Proc)
               current_value = @@#{attribute} if defined?(@@#{attribute})
               @@#{attribute} = value.call(current_value)
@@ -70,10 +71,20 @@ class Module
       EOS
     end
   end
+  alias :sync_cattr_writer :sync_mattr_writer
 
   # Generate a class reader and writer for the attribute
-  def sync_cattr_accessor(*attributes, &block)
+  def sync_mattr_accessor(*attributes, &block)
     sync_cattr_writer(*attributes)
     sync_cattr_reader(*attributes, &block)
   end
+  alias :sync_cattr_accessor :sync_mattr_accessor
+
+  private
+
+  def sync_attr_sync(share=nil, &block)
+    @__sync_attr_sync = ::Sync.new unless defined? @__sync_attr_sync
+    @__sync_attr_sync.synchronize(share, &block) if block
+  end
+
 end
