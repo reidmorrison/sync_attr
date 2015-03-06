@@ -78,8 +78,6 @@ class InstanceAttributesTest < Minitest::Test
       assert ex2 = SyncAttrExample2.new
       assert_equal 'hello world', ex1.test1
       assert_equal 'hello world instance', ex2.test1
-      assert ex1.instance_variable_get(:@_sync_attr_sync)
-      assert ex1.instance_variable_get(:@_sync_attr_sync).object_id != ex2.instance_variable_get(:@_sync_attr_sync).object_id
     end
 
     should 'ensure that different instances have their own synchs' do
@@ -87,15 +85,11 @@ class InstanceAttributesTest < Minitest::Test
       assert ex2 = SyncAttrExample.new
       assert_equal 'hello world', ex1.test1
       assert_equal 'hello world', ex2.test1
-      assert ex1.instance_variable_get(:@_sync_attr_sync)
-      assert ex1.instance_variable_get(:@_sync_attr_sync).object_id != ex2.instance_variable_get(:@_sync_attr_sync).object_id
     end
 
     should 'ensure that objects and classes have their own synchs' do
       assert ex1 = SyncAttrExample.new
       assert_equal 'hello world', ex1.test1
-      assert ex1.instance_variable_get(:@_sync_attr_sync)
-      assert SyncAttrExample.instance_variable_get(:@__sync_attr_sync).object_id != ex1.instance_variable_get(:@_sync_attr_sync).object_id, SyncAttrExample.instance_variable_get(:@__sync_attr_sync)
     end
   end
 end

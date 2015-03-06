@@ -56,11 +56,6 @@ class ClassAttributesTest < Minitest::Test
 
   context "with example2" do
 
-    should 'ensure that different classes have their own synch instances' do
-      assert SyncCAttrExample.instance_variable_get(:@__sync_attr_sync)
-      assert SyncCAttrExample.instance_variable_get(:@__sync_attr_sync).object_id != SyncCAttrExample2.instance_variable_get(:@__sync_attr_sync).object_id
-    end
-
     should 'ensure that different classes have their own class attributes' do
       assert ex1 = SyncCAttrExample.new
       assert_equal 'hello world', ex1.class.test1
