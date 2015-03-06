@@ -91,10 +91,12 @@ module SyncAttr
     def sync_attr_sync(share, &block)
       unless defined?(@_sync_attr_sync)
         self.class.send(:sync_attr_sync, :EX) do
-          @_sync_attr_sync = ::Sync.new unless defined?(@_sync_attr_sync)
+          # Switch to Mutex due to hanging issues with Sync and since performance is
+          # very similar due to the additional complexity of multiple mutexes etc. in Sync
+          @_sync_attr_sync = ::Mutex.new unless defined?(@_sync_attr_sync)
         end
       end
-      @_sync_attr_sync.synchronize(share, &block)
+      @_sync_attr_sync.synchronize(&block)
     end
 
   end

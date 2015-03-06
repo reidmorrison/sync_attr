@@ -1,4 +1,4 @@
-require 'sync'
+require 'thread'
 require 'sync_attr/version'
 require 'sync_attr/class_attributes'
 require 'sync_attr/attributes'

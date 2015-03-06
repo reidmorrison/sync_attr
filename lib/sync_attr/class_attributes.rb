@@ -83,8 +83,10 @@ class Module
   private
 
   def sync_attr_sync(share=nil, &block)
-    @__sync_attr_sync = ::Sync.new unless defined? @__sync_attr_sync
-    @__sync_attr_sync.synchronize(share, &block) if block
+    # Switch to Mutex due to hanging issues with Sync and since performance is
+    # very similar due to the additional complexity of multiple mutexes etc. in Sync
+    @__sync_attr_sync = ::Mutex.new unless defined? @__sync_attr_sync
+    @__sync_attr_sync.synchronize(&block) if block
   end
 
 end
