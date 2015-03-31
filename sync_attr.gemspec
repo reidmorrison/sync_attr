@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.authors     = ['Reid Morrison']
   s.email       = ['reidmo@gmail.com']
   s.homepage    = 'https://github.com/reidmorrison/sync_attr'
-  s.summary     = "Create thread-safe class and instance attributes"
+  s.summary     = "Thread-safe class and instance attributes"
   s.description = "When working in a multi-threaded environment it is important to ensure that any attributes that are shared across threads are properly protected to ensure that inconsistent data is not created. Lazy initializing these safe attributes improves startup times and only creates resources when they are needed."
   s.files       = Dir["lib/**/*", "LICENSE.txt", "Rakefile", "README.md"]
   s.test_files  = Dir["test/**/*"]

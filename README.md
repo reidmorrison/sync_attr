@@ -1,7 +1,7 @@
 sync_attr [![Build Status](https://secure.travis-ci.org/reidmorrison/sync_attr.png?branch=master)](http://travis-ci.org/reidmorrison/sync_attr)
 =========
 
-Create thread-safe class and instance attributes
+Thread-safe Ruby class and instance attributes
 
 * http://github.com/reidmorrison/sync_attr
 
@@ -96,7 +96,16 @@ puts "The person is #{Person.name} now has age #{Person.age}"
 # => The person is Joe Bloggs now has age 23
 ```
 
-## Synchronized Instance Attribute example
+## Thread-safe Instance Attribute example
+
+Create a reader for an attribute and lazy initialize its value on the first
+attempt to read it. I.e. Lazy initialize the value.
+
+An optional block can be supplied to initialize the synchronized attribute
+when it is first read. The initializer is thread safe and will block all other
+reads to this attribute while it is being initialized. This ensures that the
+initializer is only run once per object and that all threads to call the reader
+receive the same value, regardless of how many threads call the reader at the same time.
 
 Example:
 
