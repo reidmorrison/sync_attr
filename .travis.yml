@@ -5,3 +5,4 @@ rvm:
   - 2.2
   - jruby-1.7
   - jruby-head
+  - rbx

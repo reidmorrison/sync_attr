@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   s.authors     = ['Reid Morrison']
   s.email       = ['reidmo@gmail.com']
   s.homepage    = 'https://github.com/reidmorrison/sync_attr'
-  s.summary     = "Thread safe accessors for Ruby class and instance attributes. Supports thread safe lazy loading of attributes"
-  s.description = "SyncAttr is a mixin to read, write and lazy initialize both class and instance variables in a multi-threaded environment when the attribute could be modified by two threads at the same time, written in Ruby."
+  s.summary     = "Create thread-safe class and instance attributes"
+  s.description = "When working in a multi-threaded environment it is important to ensure that any attributes that are shared across threads are properly protected to ensure that inconsistent data is not created. Lazy initializing these safe attributes improves startup times and only creates resources when they are needed."
   s.files       = Dir["lib/**/*", "LICENSE.txt", "Rakefile", "README.md"]
   s.test_files  = Dir["test/**/*"]
   s.license     = "Apache License V2.0"
