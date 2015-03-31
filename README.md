@@ -5,6 +5,10 @@ Thread-safe Ruby class and instance attributes
 
 * http://github.com/reidmorrison/sync_attr
 
+## Status
+
+Enterprise Production Ready - In daily use in large multi-threaded application
+
 ## Introduction
 
 When working in a multi-threaded environment it is important to ensure that
@@ -30,20 +34,19 @@ are suspended until the write is complete.
 ## Features
 
 * Adds thread-safe accessors for class instance attributes.
-* Supports shared read access to class and instance attributes. This allows
-  multiple threads to read the attribute, but will block all reads and writes whilst
-  the attribute is being modified.
+* Only one thread can read or write the value at any one time.
 * Prevents attributes from being read while it is being updated or initialized for
   the first time.
 * Thread-safe attribute lazy initialization.
   Lazy initialization allows class attributes to be loaded only when first read.
   As a result it's value can be read for the first time from a database or
   configuration file once and only when needed.
-* Avoids having to create yet another Rails initializer.
-* Avoids costly startup initialization when the initialized data may never be accessed
-  For example when Rake tasks are run, they may not need access to everything in
+* Avoids having to create yet another Rails initializer, when the data can be
+  fetched or held by a class instance attribute.
+* Avoids costly startup initialization when the initialized data may never be accessed.
+  For example, when Rake tasks are run, they may not need access to everything in
   the Rails environment.
-* Works in regular Ruby and does not require Rails, or any other gems.
+* Works with Rails and regular Ruby.
 
 ## Thread-safe Class Attribute example
 
